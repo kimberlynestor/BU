@@ -1,0 +1,272 @@
+---
+title: "CS544 Final Project"
+author: "Kimberly Nestor"
+date: "3/4/2021"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+
+library(plotly)
+library(orca)
+
+#import avengers data from github
+path = 'https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv' #raw
+avengers.data = read.csv(path)
+
+```
+
+The dataset used in this project was taken from github, and is based on members of the superhero group Avengers. The columns of the dataset include: Name.Alias, Appearances, Current, Gender, Probationary.Intro, Full.Reserve.Avengers.Intro, Year, Years.since.joining, Honorary, Death1 and Return1. In this project analyses were done to examine and visualize many of the prior listed variables.  
+
+```{r show-data, echo=FALSE, message=FALSE, results='hide', output=FALSE}
+#Data table used in this project
+#Use Module3 as a guide
+
+head(avengers.data)
+tail(avengers.data)
+
+#results='hide', fig.keep='all'
+#include=FALSE #hide everything from chunk
+
+```
+
+## Part 1 
+### Categorical variable
+In this section a contingency table and a mosaic plot is used to examine the disparity between female and male Avengers, and to determine what ratios of each have died throughout the series. Both variables Gender and Death1 are categorical as the values provided in the data set are Female, Male and Yes, No respectively. In the mosaic plot below we can determine that slightly more Male Avengers have died throughout the series in comparison to women, though there is not a large difference between the two. 
+
+```{r Part1A, echo=FALSE, message=FALSE}
+#### Part 1A
+#Do analyses, at least one categorical variable, show plots
+
+#categorical - Gender, Death, mosaic
+tab.sex.death = table(avengers.data$Gender, avengers.data$Death1)
+mosaicplot(tab.sex.death, color=c("#4d384c", "#9d98ae"), main="Avenger Deaths")
+
+```
+
+### Numerical variable
+The numerical variable examined in this section is the Year Avengers joined the team. From the boxplot below we can see the central portion of the data is between 1978 and 2010, meaning that a large portion of Avengers joined within this time period. The boxplot also has two whiskers which indicate the spread of the data and suggests that there are a few other years where Avengers joined the team that do not fit within the central portion of the data. The lower bound of the whisker is 1963, while the upper bound is 2015. There is one outlier, the year 1900 where an Avenger joined the team. Since there is not a large portion of data within this time perios that year marker is an outlier. 
+
+```{r Part1B, echo=FALSE, message=FALSE}
+#### Part 1B
+#Do analyses, at least one numerical variable; show plots
+
+# font list info
+font.info = list(family = "Arial Black", size=18, color = "#000000")
+# set axes
+x.ax = list(title = "Year", titlefont=font.info)
+
+#numerical - Year, boxplot
+num.boxplot = plot_ly(data=avengers.data, x = ~Year, type = "box", marker=list(color= "#903A19"), 
+                      color=" ", colors="#903A19") %>% layout(xaxis=x.ax)#change to y for vertical
+num.boxplot
+
+```
+
+***
+
+## Part 2 
+### One set of two or more variables
+The plot below shows a scatterplot of numerical data from the variables, Years since joining (y-axis) the Avengers and the number of Appearances (x-axis) the Avenger has made throughout the Cinematic Universe. I expected there to be a strong positive correlation between these variables, as I thought the longer an Avenger is on the team the more Appearances they will accumulate. This assumption was wrong however as there is no clear distribution of the data, mos t of which is clustered in the lower left quadrant. The numerical markers are also separated out by Gender, with the blue markers denoting Female Avengers and the green markers denoting Male Avengers. Using a qualitative observation we can determine there are more Male Avengers than Female on the team and the cluster of Avengers with the largest number of Appearances is also mostly Male. The lack of a positive correlation can be accounted for the period with which the Avengers became trendy. Within the past 10-20 years there have been a number of movies made about the Avengers but on independent Avengers and the entire team. Because of the recent popularity of this series there would not be a strong number of Appearance or Years since joining on the right quadrants of the graph. There are still a few outliers though, most likely from that movie/s from 1900.
+
+```{r Part2, echo=FALSE, message=FALSE}
+#### Part 2
+#Do analyses, at least one set of two or more variables; Show plots 
+#scatterplot appearances, years since joining
+
+# font list info
+font.info = list(family = "Arial Black", size=18, color = "#000000")
+# set axes
+x.ax = list(title = "Years since joining", titlefont=font.info)
+y.ax = list(title = "Appearances", titlefont=font.info)
+
+#plot scatterplot
+pt2.scat.sex = plot_ly(data=avengers.data, x = ~Years.since.joining, y = ~Appearances, 
+  color= ~Gender, colors= c("#4f7298", "#96b596")) %>% layout(xaxis=x.ax, yaxis=y.ax) # #34595a, marker=list(color= "#49796b"), #6b8eb6 
+pt2.scat.sex
+
+# save as static image
+#orca(pt2.scat.sex, width=3.4*300, height=2.5*300) #"Pt2_scatt_yearsappear.jpg"
+
+```
+
+***
+
+## Part 3 
+### Distribution of numerical variable
+The following histogram shows the distribution the variable Years since joining. The graph is right skewed with a tail trailing off to the right. As noted prior we can most likely account for this trend as the Avengers have recently risen in popularity so more superheroes have joined the team recently. Hence the lower frequencies exhibited on the right tail. 
+
+```{r Part3, echo=FALSE, message=FALSE}
+#### Part 3
+#Examine distribution for one numerical variable
+#numerical - Years.since.joining, histogram
+
+#Show histogram of time each avenger joined the league
+# font list info
+font.info = list(family = "Arial Black", size=18, color = "#000000")
+# set axes
+x.ax = list(title = "Years since joining", titlefont=font.info, dtick=10, ticklen=7, 
+            tickwidth=2, tickfont=list(size = 15))# dtick=20000
+y.ax = list(title = "Frequency", titlefont=font.info, ticklen=7, tickwidth=2, 
+            tickfont=list(size = 15))
+
+# plot hist
+hist.fig = plot_ly(x= ~avengers.data$Years.since.joining, type= "histogram", 
+          alpha=0.8, marker=list(color= "#8e3c52")) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+
+# save as static image
+#orca(hist.fig, width=4.5*300, height=3.5*300) #"Pt3_hist_yearsjoin.jpg"
+
+hist.fig
+
+```
+
+***
+
+## Part 4
+### Central Limit Theorem using Random Sample Means
+#### Variable = Years since joining
+The variable Years since joining was used to demonstrate the theory of Central Limit Theorem. In this case the original distribution of the data is found in the previous graph. In this section sample sizes of 10, 20, 30, 40 were used to conduct random sampling using sampling of means. Sample sizes 10, 20, 30 show a slight right skew, similar to the original distribution of the data. However the distribution is still unimodal and close to the normal distribution. The final sample size 40 is sysmetric and is a good example of the normal distribution obtained after normalizing the data using the sampling of means method. 
+
+```{r Part4, echo=FALSE, message=FALSE}
+#### Part 4
+#### Question 2B
+#Draw 1,000 samples of sizes 10, 20, 30, 40; plot hist of sample means, 2x2, Years.since.joining
+
+samples = 1000
+samp.sz10 = 10
+samp.sz20 = 20
+samp.sz30 = 30
+samp.sz40 = 40
+
+# list of zeros
+xbar10 = numeric(samp.sz10)
+xbar20 = numeric(samp.sz20)
+xbar30 = numeric(samp.sz30)
+xbar40 = numeric(samp.sz40)
+
+# draw samples of data, add to list
+#samp size 10
+for (i in 1:samples){
+  xbar10[i] = mean(sample(avengers.data$Years.since.joining, samp.sz10, replace=FALSE))
+}
+
+#samp size 20
+for (i in 1:samples){
+  xbar20[i] = mean(sample(avengers.data$Years.since.joining, samp.sz20, replace=FALSE))
+}
+
+#samp size 30
+for (i in 1:samples){
+  xbar30[i] = mean(sample(avengers.data$Years.since.joining, samp.sz30, replace=FALSE))
+}
+
+#samp size 40
+for (i in 1:samples){
+  xbar40[i] = mean(sample(avengers.data$Years.since.joining, samp.sz40, replace=FALSE))
+}
+
+#Show the histogram of the sample means.
+# font list info
+font.info = list(family = "Arial Black", size=25, color = "#000000")
+
+# plot hist samp size 10
+hist.fig10 = plot_ly(x= ~xbar10, type= "histogram", alpha=0.8, name="SampSize10")
+
+# plot hist samp size 20
+hist.fig20 = plot_ly(x= ~xbar20, type= "histogram", alpha=0.8, name="SampSize20")
+
+# plot hist samp size 30
+hist.fig30 = plot_ly(x= ~xbar30, type= "histogram", alpha=0.8, name="SampSize30")
+
+# plot hist samp size 40
+hist.fig40 = plot_ly(x= ~xbar40, type= "histogram", alpha=0.8, name="SampSize40")
+
+
+# plot four plex
+samp.size.panel = subplot(hist.fig10, hist.fig20, hist.fig30, hist.fig40, nrows=2)
+samp.size.panel
+
+```
+
+***
+
+## Part 5
+### Sampling methods as a substitute for whole dataset
+#### Variable = Appearances
+This section uses three sampling methods to draw data with a sample size of 50 from the larger dataset using the Appearances variable. The first graph shows the distribution of the full dataset, with a right skew and a few outliers on the right quadrants of the graph. The second graph uses the sampling technique of simple random sampling without replacement. The third graph uses systematic sampling where each value has an equal probability of being selected. While the fourth graph employs inclusion probabilities to determine the proability each value will be selected based on its size. We can observe in the graph below that each of the three sampling methods result in a histogram with a similar distribution to the original full dataset, even with appropriate outlier values. This allows us to conclude that using sampling methods to conduct analyses on smaller samples of the full dataset is a viable option when doing data analyses, and can provide in similar results.
+
+```{r Part5, echo=FALSE, message=FALSE, warning=FALSE}
+#### Part 5
+#Show how various sampling methods can be used on data
+library(sampling)
+
+samp.sz = 50
+pop.sz = length(avengers.data$Appearances)
+
+#full data set - Appearances
+hist.fig.full = plot_ly(x= ~avengers.data$Appearances, type= "histogram", alpha=0.8, name="Full dataset")
+
+#simple random sampling without replacement
+# set var to random sample list, samp.sz, tot num in pop
+simp.rand.wor = srswor(samp.sz, pop.sz)
+subset.srswor = subset(avengers.data$Appearances, simp.rand.wor != 0)
+# plot hist srswor
+hist.fig.srswor = plot_ly(x= ~subset.srswor, type= "histogram", alpha=0.8, name="SRSWOR")
+
+#systematic sampling - equal
+#population num
+N = pop.sz
+#samp size
+n = samp.sz
+# sample at every k nums
+k = ceiling(N/n) 
+# find the start num in the first k sample
+r = sample(k, 1) 
+# find sequence for every k nums
+s = seq(r, by=k, length=n)
+# apply sytematic sample sequence to dataframe
+sys.samp.appear = avengers.data['Appearances'][s, ]
+# plot hist systematic sampling
+hist.fig.sys.samp = plot_ly(x= ~sys.samp.appear, type= "histogram", alpha=0.8, name="Systematic Sampling")
+
+#systematic sampling - unequal probabilities 
+# Calculate inclusion probabilities
+incl.prob = inclusionprobabilities(avengers.data$Appearances, samp.sz)
+# Sample drawn using systematic sampling, unequal probabilities
+ss = UPsystematic(incl.prob)
+sys.samp.appear.uneq.prob = subset(avengers.data$Appearances, ss != 0)
+# plot hist systematic sampling, unequal probabilities
+hist.fig.sys.samp.uneq = plot_ly(x= ~sys.samp.appear.uneq.prob, type= "histogram", alpha=0.8, name="Unequal Systematic Sampling")
+
+# plot all figs in one fig
+rand.samp.panel = subplot(hist.fig.full, hist.fig.srswor, hist.fig.sys.samp, hist.fig.sys.samp.uneq, nrows=4)
+rand.samp.panel
+
+```
+
+***
+
+## Part 6
+### 2D histogram of scatterplot
+This final graph demonstrates a technique not mentioned in the instructions or taught in this course. A 2D histogram was constructed using the scatterplot from Part2 showcasing the Years since joining against the Appearances. The gender variable was collapsed in the scatterplot used in this section to allow for the effective construction of the 2D histogram. This new graph gives a qualitative/ colour representation of where the data is clusted on a scatterplot. The scale shown on the right gives a colour distribution that shows the frequency of markers on the graph. We can see in the graph that the lower left corner, where most of the data is clustered has a variety of colours indicating values in the 60+ to ~30 marker frequency. We can also see lighter squares in the upper left quadrant of the graph, indicating a lower market frequency. Lastly on the lower right quandrant we can see out outliers from the scatterplot highlighted in blue indicating a marker frequency of ~20. 
+
+```{r Part6, echo=FALSE, message=FALSE}
+#### Part 6
+#Implementation of any feature not mentioned above 
+#2D histogram based on the scatterplot in Pt2; showing appearances, years since joining
+
+# scatterplot with single variable
+pt2.scat = plot_ly(data=avengers.data, x = ~Years.since.joining, y = ~Appearances, marker=list(color= "#00baba"))
+#2plex scatterplot and 2D histogram
+pt2.scat.2d = subplot(pt2.scat %>% add_markers(), pt2.scat %>% add_histogram2d()) #colorscale = "Blues"
+pt2.scat.2d
+
+#proportion of avengers that die return later in the series
+#scatterplot of death years since joining
+#boxplot as swarmplot
+
+```
