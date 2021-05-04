@@ -3,7 +3,7 @@ Name: Kimberly Nestor
 Class: CS 677 - Spring 2
 Date: 04/20/21
 Homework #5
-Description of Problem: Comparison of performance values between Naßive Bayesian
+Description of Problem: Comparison of performance values between Naive Bayesian
 and Decision Tree Classifiers.
 Cardiac Dataset: https://archive.ics.uci.edu/ml/datasets/Cardiotocography
 """
