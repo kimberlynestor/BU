@@ -1,0 +1,462 @@
+---
+title: "Module5 Homework"
+author: "Kimberly Nestor"
+date: "3/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(plotly)
+library(orca)
+
+path = '/Users/kimberlynestor/Desktop/BU/2021spring/CS544/Homework/Module5/plots/'
+
+```
+
+```{r Part1, echo=TRUE}
+#### Part 1
+# Central Limit Theorem
+boston = read.csv( "http://people.bu.edu/kalathur/datasets/bostonCityEarnings.csv", 
+                   colClasses = c("character", "character", "character", 
+                                  "integer", "character"))
+head(boston)
+tail(boston)
+
+```
+
+```{r Question1A, echo=TRUE}
+#### Question 1A
+#Compute mean and standard deviation of data
+hist.mean = prettyNum(mean(boston$Earnings), big.mark= ",", scientific=FALSE)
+sprintf("The mean of this data is %s", hist.mean)
+
+hist.std = prettyNum(sd(boston$Earnings), big.mark= ",", scientific=FALSE)
+sprintf("The standard deviation of this data is %s", hist.std)
+
+#Show histogram of employee earnings
+# font list info
+font.info = list(family = "Arial Black", size=25, color = "#000000")# #7f7f7f, "Courier New, monospace"
+# set axes
+x.ax = list(title = "Employee Earnings", titlefont=font.info, autotick=FALSE, 
+            tick0=40000, dtick=20000, ticklen=7, tickwidth=2, tickfont=list(size = 15))# dtick=20000
+y.ax <- list(title = "Frequency", titlefont=font.info, ticklen=7, tickwidth=2, tickfont=list(size = 15))
+
+# plot hist
+hist.fig = plot_ly(x= ~boston$Earnings, type= "histogram", alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+#hist.fig = plot_ly(x= ~c(boston$Earnings, 400000), type= "histogram", alpha=0.8) #nbinsx=30
+
+# save as static image
+orca(hist.fig, width=4.5*300, height=3.5*300) #"Q1A_hist_empearn.jpg"
+
+hist.fig
+
+#Inference from shape of histogram
+
+summary(boston$Earnings)
+
+```
+
+```{r Question1B, echo=TRUE}
+#### Question 1B
+#Draw 5,000 samples of this data of size 10
+
+samples = 5000
+sample.size = 10
+
+# list of zeros
+xbar = numeric(samples)
+
+# draw samples of data size ten, find mean, add to list
+for (i in 1:samples){
+  xbar[i] = mean(sample(boston$Earnings, sample.size, replace = FALSE))
+}
+
+#Compute mean and standard deviation of data
+hist.mean = prettyNum(mean(xbar), big.mark= ",", scientific=FALSE)
+sprintf("The mean of this data is %s", hist.mean)
+
+hist.std = prettyNum(sd(xbar), big.mark= ",", scientific=FALSE)
+sprintf("The standard deviation of this data is %s", hist.std)
+
+#Show the histogram of the sample means.
+# font list info
+font.info = list(family = "Arial Black", size=25, color = "#000000")# #7f7f7f, "Courier New, monospace"
+# set axes
+x.ax = list(title = "Sample Means of Earnings", titlefont=font.info, ticklen=7, 
+            tickwidth=2, tickfont=list(size = 15))# dtick=20000
+y.ax <- list(title = "Frequency", titlefont=font.info, ticklen=7, tickwidth=2, 
+             tickfont=list(size = 15))
+
+# plot hist
+hist.fig = plot_ly(x= ~xbar, type= "histogram", alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+
+# save as static image
+orca(hist.fig, width=4.5*300, height=3.5*300) #"Q1B_hist_sampmean_empearn.jpg"
+
+hist.fig
+
+```
+
+```{r Question1C, echo=TRUE}
+#### Question 1C
+#Draw 5,000 samples of this data of size 40
+
+samples = 5000
+sample.size = 40
+
+# list of zeros
+xbar = numeric(samples)
+
+# draw samples of data size ten, find mean, add to list
+for (i in 1:samples){
+  xbar[i] = mean(sample(boston$Earnings, sample.size, replace = FALSE))
+}
+
+#Compute mean and standard deviation of data
+hist.mean = prettyNum(mean(xbar), big.mark= ",", scientific=FALSE)
+sprintf("The mean of this data is %s", hist.mean)
+
+hist.std = prettyNum(sd(xbar), big.mark= ",", scientific=FALSE)
+sprintf("The standard deviation of this data is %s", hist.std)
+
+#Show the histogram of the sample means.
+# font list info
+font.info = list(family = "Arial Black", size=25, color = "#000000")# #7f7f7f, "Courier New, monospace"
+# set axes
+x.ax = list(title = "Sample Means of Earnings", titlefont=font.info, ticklen=7, 
+            tickwidth=2, tickfont=list(size = 15))# dtick=20000
+y.ax <- list(title = "Frequency", titlefont=font.info, ticklen=7, tickwidth=2, 
+             tickfont=list(size = 15))
+
+# plot hist
+hist.fig = plot_ly(x= ~xbar, type= "histogram", alpha=0.8) %>% 
+  layout(xaxis=x.ax, yaxis=y.ax)  
+
+# save as static image
+orca(hist.fig, width=4.5*300, height=3.5*300) #"Q1C_hist_sampmean_empearn.jpg"
+
+hist.fig
+
+
+```
+
+```{r Question1D, echo=TRUE}
+#### Question 1D
+#Compare means and standard deviations of the above three distributions
+
+```
+
+
+
+```{r Part2, echo=TRUE}
+#### Part 2
+# Central Limit Theorem – Negative Binomial Distribution
+
+size = 3
+prob = 0.5
+
+```
+
+```{r Question2A, echo=TRUE}
+#### Question 2A
+#Generate 5000 random values
+gen.rnbinom = rnbinom(5000, size=size, prob=prob)
+# frequency proportion of the whole
+prop.tab.rbinom = prop.table(table(gen.rnbinom)) 
+df.rnbinom = data.frame(prop.tab.rbinom)
+
+# set axes
+x.ax = list(title = "Random values in nbinom", titlefont=font.info, ticklen=7, 
+            tickwidth=2, tickfont=list(size = 15))# dtick=20000
+y.ax <- list(title = "Proportion", titlefont=font.info, ticklen=7, tickwidth=2, 
+             tickfont=list(size = 15))
+
+# plot bargraph
+bar.fig = plot_ly(df.rnbinom, x= ~gen.rnbinom, y= ~Freq, type= 'bar', name= '') %>% 
+  layout(xaxis=x.ax, yaxis=y.ax)
+
+# save as static image
+orca(bar.fig, width=4.5*300, height=3.5*300) #"Q2A_barplot_prop_nbinom.jpg"
+
+bar.fig
+
+```
+
+```{r Question2B, echo=TRUE}
+#### Question 2B
+#Draw 1,000 samples of Q2A data sizes 10, 20, 30, 40; plot hist of sample means, 2x2
+
+samples = 1000
+samp.sz10 = 10
+samp.sz20 = 20
+samp.sz30 = 30
+samp.sz40 = 40
+
+# list of zeros
+xbar10 = numeric(samp.sz10)
+xbar20 = numeric(samp.sz20)
+xbar30 = numeric(samp.sz30)
+xbar40 = numeric(samp.sz40)
+
+# draw samples of data, add to list
+#samp size 10
+for (i in 1:samples){
+  xbar10[i] = mean(sample(gen.rnbinom, samp.sz10, replace = FALSE))
+}
+
+#samp size 20
+for (i in 1:samples){
+  xbar20[i] = mean(sample(gen.rnbinom, samp.sz20, replace = FALSE))
+}
+
+#samp size 30
+for (i in 1:samples){
+  xbar30[i] = mean(sample(gen.rnbinom, samp.sz30, replace = FALSE))
+}
+
+#samp size 40
+for (i in 1:samples){
+  xbar40[i] = mean(sample(gen.rnbinom, samp.sz40, replace = FALSE))
+}
+
+#Show the histogram of the sample means.
+# font list info
+font.info = list(family = "Arial Black", size=25, color = "#000000")
+# set axes
+x.ax = list(title = "Sample Means of nbinom", titlefont=font.info, ticklen=7, 
+            tickwidth=2, tickfont=list(size = 15))# dtick=20000
+y.ax <- list(title = "Frequency", titlefont=font.info, ticklen=7, tickwidth=2, 
+             tickfont=list(size = 15))
+
+# plot hist samp size 10
+hist.fig10 = plot_ly(x= ~xbar10, type= "histogram", alpha=0.8, name="SampSize10") %>% 
+  layout(xaxis=x.ax, yaxis=y.ax)  
+#hist.fig10
+
+# plot hist samp size 20
+hist.fig20 = plot_ly(x= ~xbar20, type= "histogram", alpha=0.8, name="SampSize20") %>% 
+  layout(xaxis=x.ax, yaxis=y.ax)  
+#hist.fig20
+
+# plot hist samp size 30
+hist.fig30 = plot_ly(x= ~xbar30, type= "histogram", alpha=0.8, name="SampSize30") %>% 
+  layout(xaxis=x.ax, yaxis=y.ax)  
+#hist.fig30
+
+# plot hist samp size 40
+hist.fig40 = plot_ly(x= ~xbar40, type= "histogram", alpha=0.8, name="SampSize40") %>% 
+  layout(xaxis=x.ax, yaxis=y.ax)  
+#hist.fig40
+
+# plot four plex
+samp.size.panel = subplot(hist.fig10, hist.fig20, hist.fig30, hist.fig40, nrows=2)
+#par(mfrow=c(2,2)) #should work for base r
+
+# save as static image
+orca(samp.size.panel, width=4.5*300, height=3.5*300) #"Q2B_hist_sampsize_4plex.jpg"
+
+samp.size.panel
+
+```
+
+```{r Question2C, echo=TRUE}
+#### Question 2C
+#Compute mean and standard deviation of Q2A
+gen.rnbinom.mean = prettyNum(mean(gen.rnbinom), big.mark= ",", scientific=FALSE)
+sprintf("The mean of data distribution from Question2A is %s", gen.rnbinom.mean)
+
+gen.rnbinom.std = prettyNum(sd(gen.rnbinom), big.mark= ",", scientific=FALSE)
+sprintf("The standard deviation of data distribution from Question2A is %s", gen.rnbinom.std)
+
+#Compare mean and std with hists from Q2B
+
+```
+
+
+
+```{r Part3, echo=TRUE}
+#### Part 3
+# Sampling
+
+# unique depts and num employees in them
+unq.lst.dept = unique(boston$Department, incomparables = FALSE)
+tot.dept.emp = c()
+
+# loop to find num of employees in each department
+for (i in 1:length(unq.lst.dept)){
+  df.subset = subset(boston, Department == unq.lst.dept[i])
+  tot.dept.emp[i] = nrow(df.subset)
+}
+
+# make num employee in dept database, order descend
+df.num.emp = data.frame(unq.lst.dept, tot.dept.emp)
+df.num.emp.ord = df.num.emp[order(-df.num.emp$tot.dept.emp),]
+
+#top 5 depts - df only depts and num employees
+df.top5.dept = df.num.emp.ord[1:5,] 
+#top 5 depts - all boston data with top5 depts only
+boston.top5.dept = subset(boston, Department %in% df.top5.dept$unq.lst.dept) 
+head(boston.top5.dept)
+tail(boston.top5.dept)
+
+#sample info
+sample.sz = 50
+start.seed = 5931
+
+```
+
+```{r Question3A, echo=TRUE}
+#### Question 3A
+#Show sample drawn using simple random sampling without replacement
+library(sampling)
+
+# set var to random sample list, samp.sz, tot num in pop
+simp.rand.wor = srswor(sample.sz, nrow(boston.top5.dept))
+sub.Q2A = subset(boston.top5.dept, simp.rand.wor != 0)
+sub.Q2A
+
+#Show frequencies for selected departments
+freq.dept.srswor = table(sub.Q2A$Department)
+freq.dept.srswor
+
+#Show percentages of these with respect to sample size
+prop.dept.srswor = prop.table(freq.dept.srswor)*100
+prop.dept.srswor
+
+```
+
+```{r Question3B, echo=TRUE}
+#### Question 3B
+#Show sample drawn using systematic sampling
+
+#population num
+N = nrow(boston.top5.dept) 
+#samp size
+n = sample.sz
+# sample at every k nums
+k = ceiling(N/n) 
+# find the start num in the first k sample
+r = sample(k, 1) 
+
+#find sequence for every k nums
+s = seq(r, by=k, length=n)
+
+#apply sytematic sample sequence to dataframe
+system.samp.depart = boston.top5.dept[s, ]
+system.samp.depart
+
+#Show frequencies for selected departments
+freq.dept.systsamp = table(system.samp.depart$Department)
+freq.dept.systsamp
+
+#Show percentages of these with respect to sample size
+prop.dept.systsamp = prop.table(freq.dept.systsamp)*100
+prop.dept.systsamp
+
+```
+
+```{r Question3C, echo=TRUE}
+#### Question 3C
+#Calculate inclusion probabilities using Earnings variable
+
+incl.prob = inclusionprobabilities(boston.top5.dept$Earnings, sample.sz)
+
+#Show sample drawn using systematic sampling with unequal probabilities
+s = UPsystematic(incl.prob)
+
+samp.dep.uneq.prob = subset(boston.top5.dept, s != 0)
+samp.dep.uneq.prob
+
+#Show frequencies for selected departments
+freq.dept.uneq.prob = table(samp.dep.uneq.prob$Department)
+freq.dept.uneq.prob
+
+#Show percentages of these with respect to sample size
+prop.dept.uneq.prob = prop.table(freq.dept.uneq.prob)*100
+prop.dept.uneq.prob
+
+```
+
+```{r Question3D, echo=TRUE}
+#### Question 3D
+
+set.seed(start.seed)
+
+#Order data using Department variable
+boston.top5.dept.ord = boston.top5.dept[order(boston.top5.dept$Department),]
+head(boston.top5.dept.ord)
+tail(boston.top5.dept.ord)
+
+#Draw a stratified sample using proportional sizes based on Department variable
+#Frequency
+boston.top5.dept.tab = table(boston.top5.dept.ord$Department)
+
+#proportion table
+boston.top5.dept.prop = prop.table(table(boston.top5.dept.ord$Department))
+
+#strata sizes
+strata.sizes.tab = sample.sz * boston.top5.dept.prop / sum(boston.top5.dept.prop)
+strata.sizes.vec = as.vector(strata.sizes.tab)
+strata.sizes.vec
+
+#Draw stratified sample using proportional sizes based on Department variable
+strat.sample = sampling::strata(boston.top5.dept.ord, stratanames= c("Department"), 
+                                size= strata.sizes.vec, method="srswor", description=TRUE)
+head(strat.sample)
+tail(strat.sample)
+
+#Show frequencies & percentages for selected departments, with respect to sample size
+#stratefied sample frequency table, department
+strat.sample.freq = table(strat.sample$Department)
+strat.sample.freq
+
+#stratefied sample percentage table, department
+strat.sample.prop = prop.table(strat.sample.freq)*100
+strat.sample.prop
+
+```
+
+```{r Question3E, echo=TRUE}
+#### Question 3E
+library(formattable)
+
+#Comparemeans of Earnings variable for these four samples against the mean of data
+boston.top5.dept.strat = merge(boston.top5.dept.ord, strat.sample)
+
+#Compute mean earnings of top5 departments
+top5.dept.earn.mean = currency(mean(boston.top5.dept$Earnings), digits = 0L)
+sprintf("The mean earnings of top5 departments is %s", toString(top5.dept.earn.mean))
+
+#stratum1 mean earnings
+df.strat1 = subset(boston.top5.dept.strat, Stratum == 1)
+df.strat1.mean = currency(mean(df.strat1$Earnings), digits = 0L)
+sprintf("The mean earnings of Stratum1 is %s", toString(df.strat1.mean))
+
+#stratum2 mean earnings
+df.strat2 = subset(boston.top5.dept.strat, Stratum == 2)
+df.strat2.mean = currency(mean(df.strat2$Earnings), digits = 0L)
+sprintf("The mean earnings of Stratum2 is %s", toString(df.strat2.mean))
+
+#stratum3 mean earnings
+df.strat3 = subset(boston.top5.dept.strat, Stratum == 3)
+df.strat3.mean = currency(mean(df.strat3$Earnings), digits = 0L)
+sprintf("The mean earnings of Stratum3 is %s", toString(df.strat3.mean))
+
+#stratum4 mean earnings
+df.strat4 = subset(boston.top5.dept.strat, Stratum == 4)
+df.strat4.mean = currency(mean(df.strat4$Earnings), digits = 0L)
+sprintf("The mean earnings of Stratum4 is %s", toString(df.strat4.mean))
+
+#stratum5 mean earnings
+df.strat5 = subset(boston.top5.dept.strat, Stratum == 5)
+df.strat5.mean = currency(mean(df.strat5$Earnings), digits = 0L)
+sprintf("The mean earnings of Stratum5 is %s", toString(df.strat5.mean))
+
+#Compare strata mean earnings against the top5 data means
+
+```
+
+
+
