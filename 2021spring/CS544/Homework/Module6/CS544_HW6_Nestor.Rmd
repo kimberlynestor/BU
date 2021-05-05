@@ -1,0 +1,332 @@
+---
+title: "Module6 Homework"
+author: "Kimberly Nestor"
+date: "3/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r Part1, echo=TRUE}
+#### Part 1
+# Strings
+
+library(stringr)
+
+#vector of words from Lincoln’s speech
+file = 'http://people.bu.edu/kalathur/datasets/lincoln.txt'
+words = scan(file, what=character())
+```
+
+```{r Question1A, echo=TRUE}
+#### Question 1A
+#Detect and show all words with a punctuation symbol
+
+wrds.punt = words[str_detect(words, "([[:punct:]])")] #all punct
+wrds.punt.log = str_detect(words, "([[:punct:]])")
+head(wrds.punt)
+tail(wrds.punt)
+
+#wrds.punt = words[str_detect(words, "([[:alpha:]])([[:punct:]])")] #only word then punct
+
+
+
+```
+
+```{r Question1B, echo=TRUE}
+#### Question 1B
+#Replace all punctuations in Q1A with an empty string
+words.nopunct = str_replace_all(words, "[[:punct:]]", "")
+#words.nopunct
+
+#Remove any empty words 
+words.nopunct.empty = words.nopunct[str_detect(words.nopunct, "([[:alpha:]])")]
+#words.nopunct.empty
+
+#Convert all words to lower case, name as new_words 
+new_words = str_to_lower(words.nopunct.empty)
+head(new_words)
+tail(new_words)
+
+```
+
+```{r Question1C, echo=TRUE}
+#### Question 1C
+#Top 5 frequent words in new_words
+
+# unique word list and num times used
+unq.lst.words = unique(new_words, incomparables=FALSE)
+freq.word.use = c()
+
+#make new_words a dataframe
+df.new.words = data.frame(new_words)
+
+# loop to find num times word used
+for (i in 1:length(unq.lst.words)){
+  df.subset = subset(df.new.words, df.new.words[['new_words']] == unq.lst.words[i])
+  freq.word.use[i] = nrow(df.subset)
+}
+
+#frequencies of top5 words
+top5.freq = sort(unique(freq.word.use, incomparables=FALSE), decreasing=TRUE)[1:5]
+
+# make df with new_words and num times used, order descend
+df.word.freq = data.frame(unq.lst.words, freq.word.use)
+df.word.freq.ord = df.word.freq[order(-df.word.freq$freq.word.use), ]
+
+#top 5 words used
+df.top5.wrds =  subset(df.word.freq.ord, df.word.freq.ord[['freq.word.use']] %in% top5.freq)
+df.top5.wrds
+
+```
+
+```{r Question1D, echo=TRUE}
+library(plotly)
+
+#### Question 1D
+#Frequencies of word lengths in new_words
+str.lngth.nw = str_length(new_words)
+str.lngth.freq = table(str.lngth.nw)
+str.lngth.freq
+
+# font list info
+font.info = list(family = "Arial Black", size=20, color = "#000000")
+
+# set axes
+x.ax = list(title = "String Lengths", titlefont=font.info)
+y.ax <- list(title = "Frequency", titlefont=font.info)
+
+#Plot distribution of frequencies
+hist.freq.nw = plot_ly(x= ~str.lngth.nw, type= "histogram", alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+hist.freq.nw
+
+```
+
+```{r Question1E, echo=TRUE}
+#### Question 1E
+#Word/s in new_words with longest length
+subset(new_words, str_length(new_words) == max(str.lngth.nw))
+
+```
+
+```{r Question1F, echo=TRUE}
+#### Question 1F
+#Show words in new_words that start with p
+unique(new_words[str_detect(new_words, "^p")])
+
+```
+
+```{r Question1G, echo=TRUE}
+#### Question 1G
+#Show words in new_words that end with r
+unique(new_words[str_detect(new_words, "r$")])
+
+```
+
+```{r Question1H, echo=TRUE}
+#### Question 1H
+#Show words in new_words that start with letter p and end with letter r
+unique(new_words[str_detect(new_words, "^p") & str_detect(new_words, "r$")])
+
+```
+
+```{r Question1_Bonus, echo=TRUE}
+#### Question 1_Bonus
+#Remove stop words from new_words
+
+stopfile = "http://people.bu.edu/kalathur/datasets/stopwords.txt" 
+stopwords = scan(stopfile, what=character())
+
+# new list without stop words
+new_words_ns = list(c())
+
+# loop to find stop words, skip, add other words to new_words_ns
+for(i in 1:length(new_words)){
+  if(new_words[i] %in% stopwords){
+    next
+  }else{
+    #print(new_words[i])
+    new_words_ns[i] = new_words[i]
+  }
+}
+
+# flatten list
+new_words_ns = unlist(new_words_ns)
+#new_words_ns
+head(new_words_ns)
+tail(new_words_ns)
+
+```
+
+```{r Question1C_Bonus, echo=TRUE}
+#### Question 1C_Bonus
+#Top 5 frequent words in new_words_ns
+
+# unique word list and num times used
+unq.lst.words.ns = unique(new_words_ns, incomparables=FALSE)
+freq.word.use.ns = c()
+
+#make new_words a dataframe
+df.new.words.ns = data.frame(new_words_ns)
+
+# loop to find num times word used
+for (i in 1:length(unq.lst.words.ns)){
+  df.subset.ns = subset(df.new.words.ns, df.new.words.ns[['new_words_ns']] == unq.lst.words.ns[i])
+  freq.word.use.ns[i] = nrow(df.subset.ns)
+}
+
+#frequencies of top5 words
+top5.freq.ns = sort(unique(freq.word.use.ns, incomparables=FALSE), decreasing=TRUE)[1:5]
+
+# make df with new_words_ns and num times used, order descend
+df.word.freq.ns = data.frame(unq.lst.words.ns, freq.word.use.ns)
+df.word.freq.ord.ns = df.word.freq.ns[order(-df.word.freq.ns$freq.word.use.ns), ]
+
+#top 5 words used
+df.top5.wrds.ns =  subset(df.word.freq.ord.ns, df.word.freq.ord.ns[['freq.word.use.ns']] %in% top5.freq.ns)
+df.top5.wrds.ns
+
+```
+
+```{r Question1D_Bonus, echo=TRUE}
+#### Question 1D_Bonus
+#Frequencies of word lengths in new_words
+str.lngth.ns = str_length(new_words_ns)
+str.lngth.freq.ns = table(str.lngth.ns)
+
+# font list info
+font.info = list(family = "Arial Black", size=20, color = "#000000")
+
+# set axes
+x.ax = list(title = "String Lengths (no stop)", titlefont=font.info)
+y.ax <- list(title = "Frequency", titlefont=font.info)
+
+#Plot distribution of frequencies
+hist.freq.ns = plot_ly(x= ~str.lngth.ns, type= "histogram", alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+hist.freq.ns
+
+```
+
+```{r Part2, echo=TRUE}
+#### Part 2
+# Data Wrangling
+
+library(tidyverse)
+
+df.avg.temps = read.csv('http://people.bu.edu/kalathur/usa_daily_avg_temps.csv')
+
+```
+
+```{r Question2A, echo=TRUE}
+#### Question 2A
+#Convert data frame into a tibble
+usaDailyTemps = tibble(df.avg.temps)
+
+```
+
+```{r Question2B, echo=TRUE}
+#### Question 2B
+#Maximum temperatures recorded for each year, plot the results
+
+# find unique years from tibble
+unq.yr.df = unique(usaDailyTemps$year) 
+unq.yr.df = unq.yr.df[order(unq.yr.df)]
+unq.yr.max.temp = c()
+
+# init empty tibble
+tib.empty = tibble(state=as.character(), city=as.character(), month=as.numeric(), 
+               day=as.numeric(), year=as.numeric(), avgtemp=as.numeric())
+
+# loop to find max temp for each year
+for(i in 1:length(unq.yr.df)){
+  x = filter(usaDailyTemps, year == unq.yr.df[i]) %>% arrange(desc(avgtemp))
+  yr.max.tmp = x[1,]$avgtemp
+  unq.yr.max.temp[i] = yr.max.tmp
+  max.tmp.row = filter(usaDailyTemps, year == unq.yr.df[i], avgtemp == yr.max.tmp)
+  print(max.tmp.row)
+}
+
+#make tibble
+tb.max.yr.tmp = tibble(unq.yr.df, unq.yr.max.temp)
+
+# font list info
+font.info = list(family = "Arial Black", size=18, color = "#000000")
+# set axes
+x.ax = list(title = "Years", titlefont=font.info, autotick=FALSE, 
+            tick0=1995, dtick=1, ticklen=7, tickwidth=2, tickfont=list(size = 15))
+y.ax <- list(title = "Max Temps", titlefont=font.info, ticklen=7, tickwidth=2, tickfont=list(size = 15))
+
+# plot linegraph of max temps
+line.fig = plot_ly(tb.max.yr.tmp, x= ~tb.max.yr.tmp$unq.yr.df, alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+line.fig = line.fig %>% add_trace(y = ~tb.max.yr.tmp$unq.yr.max.temp, type = 'scatter', mode = 'lines+markers')
+line.fig
+
+```
+
+```{r Question2C, echo=TRUE}
+#### Question 2C
+#Maximum temperatures recorded for each state, plot the results
+
+unq.st.df = unique(usaDailyTemps$state) 
+unq.st.df = unq.st.df[order(unq.st.df)]
+unq.st.max.temp = c()
+
+# loop to find max temp for each stsate
+for(i in 1:length(unq.st.df)){
+  x = filter(usaDailyTemps, state == unq.st.df[i]) %>% arrange(desc(avgtemp))
+  st.max.tmp = x[1,]$avgtemp
+  unq.st.max.temp[i] = st.max.tmp
+  max.tmp.row.st = filter(usaDailyTemps, state == unq.st.df[i], avgtemp == st.max.tmp)
+  print(max.tmp.row.st)
+}
+
+#make tibble
+tb.max.st.tmp = tibble(unq.st.df, unq.st.max.temp)
+
+# font list info
+font.info = list(family = "Arial Black", size=18, color = "#000000")
+# set axes
+x.ax = list(title = "State", titlefont=font.info, dtick=1, ticklen=2, tickwidth=2, tickfont=list(size = 10))
+y.ax <- list(title = "Max Temps", titlefont=font.info, ticklen=7, tickwidth=2, tickfont=list(size = 15))
+
+# plot linegraph of max temps
+line.fig = plot_ly(tb.max.st.tmp, x= ~tb.max.st.tmp$unq.st.df, alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+line.fig = line.fig %>% add_trace(y = ~tb.max.st.tmp$unq.st.max.temp, type = 'scatter', mode = 'lines+markers')
+line.fig
+
+```
+
+```{r Question2D, echo=TRUE}
+#### Question 2D
+#Filter Boston data from usaDailyTemps and assign to bostonDailyTemps
+bostonDailyTemps = filter(usaDailyTemps, city == "Boston")
+head(bostonDailyTemps)
+tail(bostonDailyTemps)
+
+```
+
+```{r Question2E, echo=TRUE}
+#### Question 2E
+#Average monthly temperatures for Boston, Show values and plot results, bostonDailyTemps
+
+#make tibble with avg monthly temps for Boston
+#filter(bostonDailyTemps, month==3) %>% summarise(jan.avg = mean(avgtemp))
+tb.mnth.temp = bostonDailyTemps %>% group_by(month) %>% summarise(mnth.avg.temp = mean(avgtemp))
+tb.mnth.temp
+
+# font list info
+font.info = list(family = "Arial Black", size=18, color = "#000000")
+# set axes
+x.ax = list(title = "Month", titlefont=font.info, dtick=1, ticklen=7, tickwidth=2, tickfont=list(size = 10))
+y.ax <- list(title = "Avg Temps", titlefont=font.info, ticklen=7, tickwidth=2, tickfont=list(size = 15))
+
+# plot linegraph of max temps
+line.fig = plot_ly(tb.mnth.temp, x= ~tb.mnth.temp$month, alpha=0.8) %>% layout(xaxis=x.ax, yaxis=y.ax)  
+line.fig = line.fig %>% add_trace(y = ~tb.mnth.temp$mnth.avg.temp, type = 'scatter', mode = 'lines+markers')
+line.fig
+
+```
+
